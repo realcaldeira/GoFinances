@@ -26,7 +26,7 @@ export interface DataListProps extends TransactionCardProps {
 export function Dashboard(){ 
     const data: DataListProps[] = [
         {
-        id: 1,
+        id: '1',
         type: 'positive',
         title: "Desenvolvimento de site",
                 amount: "R$ 12.000,00",
@@ -37,7 +37,7 @@ export function Dashboard(){
                 date: "13/04/2021"
         },
         {
-            id: 2,
+            id: '2',
             type: 'negative',
             title: "Hamburgueria Pizzy",
                     amount: "R$ 59,00",
@@ -48,7 +48,7 @@ export function Dashboard(){
                     date: "10/04/2021"
             },
             {
-                id: 3,
+                id: '3',
                 type: 'negative',
                 title: "Aluguel do aparatamento",
                         amount: "R$ 1.200,00",
