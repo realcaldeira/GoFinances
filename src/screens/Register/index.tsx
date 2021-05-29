@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Modal, 
     TouchableWithoutFeedback, 
     Keyboard,
     Alert
 } from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Input } from '../../components/Forms/Input';
 import { Button } from '../../components/Forms/Button';
@@ -26,6 +28,8 @@ export function Register(){
     const [transactionType, setTransactionType] = useState('');
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     
+    const dataKey = '@gofinance:transactions';
+
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
 
@@ -46,7 +50,7 @@ export function Register(){
         setCategoryModalOpen(false);
     }
 
-    function handleRegister(){
+    async function handleRegister(){
         if(name === ``)
             return Alert.alert('Digite um nome.');
         
@@ -61,14 +65,37 @@ export function Register(){
 
 
 
-        const data = {
+        const newTransaction = {
             name,
             amount,
             transactionType,
             category: category.key
         }
-        console.log(data);
+        try{
+            const data = await AsyncStorage.getItem(dataKey);
+            const currentData = data ? JSON.parse(data) : [];
+
+            const dataFormatted = [
+                ...currentData,
+                newTransaction
+            ]
+
+            await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+
+        } catch (error){
+            console.log(error);
+            Alert.alert('Não foi possível salvar');
+        }
     }
+
+    useEffect(()=> {
+        async function loadData(){
+            const data =  await AsyncStorage.getItem(dataKey);
+              console.log(JSON.parse(data!));
+          }
+          loadData();
+  
+    },[]);
 
     return(
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
