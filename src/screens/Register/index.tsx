@@ -6,6 +6,8 @@ import {
     Alert
 } from 'react-native';
 
+import uuid from 'react-native-uuid';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Input } from '../../components/Forms/Input';
@@ -66,10 +68,12 @@ export function Register(){
 
 
         const newTransaction = {
+            id: String(uuid.v4()),
             name,
             amount,
             transactionType,
-            category: category.key
+            category: category.key,
+            date: new Date()
         }
         try{
             const data = await AsyncStorage.getItem(dataKey);
@@ -78,9 +82,15 @@ export function Register(){
             const dataFormatted = [
                 ...currentData,
                 newTransaction
-            ]
+            ];
 
             await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+
+            setTransactionType('');
+            setCategory({
+                    key: 'category',
+                    name: 'Categoria',
+                });
 
         } catch (error){
             console.log(error);
