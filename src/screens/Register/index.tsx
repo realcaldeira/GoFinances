@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, } from 'react';
 import { 
     Modal, 
-    TouchableWithoutFeedback, 
-    Keyboard,
-    Alert
+    
 } from 'react-native';
+import { useForm } from 'react-hook-form';
 
-import uuid from 'react-native-uuid';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { InputForm } from '../../components/Forms/InputForm';
 import { Input } from '../../components/Forms/Input';
 import { Button } from '../../components/Forms/Button';
 import { TransactinTypeButton } from '../../components/Forms/TransactinTypeButton';
@@ -26,19 +22,27 @@ import  {
     TransactionType
  } from './styles';
 
+interface FormData {
+    name: string;
+    amount: string;
+}
+
 export function Register(){
+
     const [transactionType, setTransactionType] = useState('');
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     
     const dataKey = '@gofinance:transactions';
 
-    const [name, setName] = useState('');
-    const [amount, setAmount] = useState('');
-
     const [category, setCategory] = useState({
         key: 'category',
         name: 'Categoria',
     });
+
+    const { 
+        control,
+        handleSubmit
+    } = useForm();
 
     function handleTransactionType(type: 'up' | 'down'){
         setTransactionType(type);
@@ -52,63 +56,19 @@ export function Register(){
         setCategoryModalOpen(false);
     }
 
-    async function handleRegister(){
-        if(name === ``)
-            return Alert.alert('Digite um nome.');
-        
-        if(amount === ``)
-            return Alert.alert('Digite um valor.');
-
-        if(!transactionType)
-            return Alert.alert('Selecione o tipo da transação.');
-
-        if(category.key === 'category')
-            return Alert.alert('Selecione a categoria.');
-
-
-
-        const newTransaction = {
-            id: String(uuid.v4()),
-            name,
-            amount,
+    async function handleRegister(form: FormData){
+        const data = {
+            name: form.name,
+            amount: form.amount,
             transactionType,
-            category: category.key,
-            date: new Date()
+            category: category.key
+            }
+            console.log(data);
         }
-        try{
-            const data = await AsyncStorage.getItem(dataKey);
-            const currentData = data ? JSON.parse(data) : [];
-
-            const dataFormatted = [
-                ...currentData,
-                newTransaction
-            ];
-
-            await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
-
-            setTransactionType('');
-            setCategory({
-                    key: 'category',
-                    name: 'Categoria',
-                });
-
-        } catch (error){
-            console.log(error);
-            Alert.alert('Não foi possível salvar');
-        }
-    }
-
-    useEffect(()=> {
-        async function loadData(){
-            const data =  await AsyncStorage.getItem(dataKey);
-              console.log(JSON.parse(data!));
-          }
-          loadData();
-  
-    },[]);
+       
 
     return(
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+       
             <Container>
                 <Header>
                 <Title>Cadastro</Title>  
@@ -116,15 +76,17 @@ export function Register(){
 
                 <Form>
                     <Fields>
-                        <Input 
+                        <InputForm 
+                            name="name"
+                            control={control}
                             placeholder="Nome"
-                            onChangeText={setName}
                             autoCapitalize="sentences"
                             autoCorrect={false}
                         />
-                        <Input 
+                        <InputForm 
+                            name="amount"
+                            control={control}
                             placeholder="Preço"
-                            onChangeText={setAmount}
                             keyboardType="numeric"
                         />
                         <TransactionType>
@@ -148,7 +110,7 @@ export function Register(){
                     </Fields>
                     <Button 
                         title="Enviar"
-                        onPress={handleRegister}
+                        onPress={handleSubmit(handleRegister)}
                     />
                 </Form>
 
@@ -160,6 +122,6 @@ export function Register(){
                     />
                 </Modal>
             </Container>
-        </TouchableWithoutFeedback>
+        
     )
 }
