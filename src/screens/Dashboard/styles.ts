@@ -79,7 +79,7 @@ export const Transaction = styled.View`
     flex: 1;
     padding: 0 24px;
 
-    margin-top: ${RFPercentage(12)};
+    margin-top: ${RFPercentage(12)}px;
 `;
 
 export const Title = styled.Text`
