@@ -1,4 +1,4 @@
-import React, { useState, } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     Modal, 
     TouchableWithoutFeedback,
@@ -8,6 +8,7 @@ import {
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver} from '@hookform/resolvers/yup';
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
 
 import { InputForm } from '../../components/Forms/InputForm';
 
@@ -78,14 +79,35 @@ export function Register(){
         if(category.key  === 'category')
             return Alert.alert('Selecione a categoria')
 
-        const data = {
+        const newTransaction = {
             name: form.name,
             amount: form.amount,
             transactionType,
             category: category.key
             }
-            console.log(data);
+            try {
+                const data = await AsyncStorage.getItem(dataKey);
+                const currentData = data ? JSON.parse(data) : [];
+
+                const dataFormatted = [
+                    ...currentData,
+                    newTransaction
+                ]
+
+                 await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+
+            }catch (error) {
+                console.log(error);
+                Alert.alert('Não foi possível salvar');
+            }
         }
+
+        useEffect(()=>{
+            async function loadData(){
+                await AsyncStorage.getItem(dataKey);
+            }
+            loadData();
+        },[])
        
 
     return(
