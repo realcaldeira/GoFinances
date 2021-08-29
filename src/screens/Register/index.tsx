@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
     Modal, 
     TouchableWithoutFeedback,
@@ -92,17 +92,18 @@ export function Register(){
             category: category.key,
             date: new Date()
             }
+            
             try {
-                
                 const data = await AsyncStorage.getItem(dataKey);
                 const currentData = data ? JSON.parse(data) : [];
-
+               
                 const dataFormatted = [
                     ...currentData,
                     newTransaction
-                ]
+                ];
 
-                 await AsyncStorage.setItem(dataKey, JSON.stringify(data));
+                 await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
+                 
                  reset();
                  setTransactionType('');
                  setCategory({
@@ -118,12 +119,6 @@ export function Register(){
             }
         }
 
-        useEffect(()=>{
-            async function loadData(){
-                await AsyncStorage.getItem(dataKey);
-            }
-            loadData();
-        },[])
        
 
     return(

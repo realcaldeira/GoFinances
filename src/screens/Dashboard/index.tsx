@@ -56,6 +56,7 @@ export function Dashboard(){
         });
         
         setData(transactionsFormatted);
+        console.log(transactionsFormatted)
     }
 
    useEffect(()=>{
